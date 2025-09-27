@@ -9,8 +9,6 @@ items = [
     {"id": 2, "smiles": "CCO", "name": "ethanol"},
 ]
 
-search = [{"id": 0, "smiles": "c1ccccc1", "name": "benzene"}]
-
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Substructure Search App!"}
@@ -40,12 +38,13 @@ def update_item(item_id: int, item: dict):
             return items[idx]
     return {"error": "Item not found"}
 
-@app.put("/items/{item_id}")
-def search_item(item_id: int, item: dict):
+@app.put("/items")
+def search_item(item: dict):
     output = []
-    search[0].update(item)
+    search = []
+    search.update(item)
+    search_val = Chem.MolFromSmiles(search["smiles"])
     for _, existing_item in enumerate(items):
-        search_val = Chem.MolFromSmiles(search["smiles"])
         existing_item_val = Chem.MolFromSmiles(existing_item["smiles"])
         match = existing_item_val.HasSubstructMatch(search_val)
         if match:
